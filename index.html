@@ -190,7 +190,79 @@ function renderHomeStandings() {
   $("homeStandings").innerHTML = standingsRows(rows, "league");
   bindStandRows($("homeStandings"));
 }
-function renderStandings(){let target=$("standingsContent");if(!target)return;target.innerHTML=standingsRows(filteredStandings(standMode));bindStandRows(target)}
+
+function renderStandings() {
+  const target = $("standingsContent");
+  if (!target) return;
+
+  if (standMode !== "wildcard") {
+    target.innerHTML = standingsRows(filteredStandings(standMode));
+    bindStandRows(target);
+    return;
+  }
+
+  if (!standings.length) {
+    target.innerHTML = standingsRows([]);
+    return;
+  }
+
+  const pointsSort = (a, b) =>
+    (Number(b.points) || 0) - (Number(a.points) || 0) ||
+    (Number(b.regulationWins) || 0) - (Number(a.regulationWins) || 0) ||
+    (Number(b.regulationPlusOtWins) || 0) - (Number(a.regulationPlusOtWins) || 0) ||
+    (Number(b.goalDifferential) || 0) - (Number(a.goalDifferential) || 0) ||
+    (Number(b.goalFor) || 0) - (Number(a.goalFor) || 0);
+
+  function conferenceSection(name, abbrev, divisions) {
+    const rows = standings.filter(r =>
+      r.conferenceName === name ||
+      r.conferenceAbbrev === abbrev
+    );
+
+    if (!rows.length) {
+      return `<h2>${name} Conference</h2>
+        <div class="placeholder">Standings unavailable.</div>`;
+    }
+
+    const divisionGroups = divisions.map(division => ({
+      name: division,
+      teams: rows
+        .filter(r => (r.divisionName || "").toLowerCase().includes(division.toLowerCase()))
+        .sort(pointsSort)
+    }));
+
+    const topSix = divisionGroups.flatMap(group =>
+      group.teams.slice(0, 3)
+    );
+
+    const remaining = rows
+      .filter(r => !topSix.includes(r))
+      .sort(pointsSort);
+
+    return `
+      <h2 style="margin:20px 0 12px">${name} Conference</h2>
+
+      ${divisionGroups.map(group => `
+        <h3 style="margin:18px 0 8px">${group.name} Division</h3>
+        ${standingsRows(group.teams.slice(0, 3))}
+        <div style="height:12px"></div>
+      `).join("")}
+
+      <h3 style="margin:18px 0 8px">Wild Card Race</h3>
+      ${standingsRows(remaining.slice(0, 2))}
+      <div style="border-top:1px dashed #45616a;margin:12px 0"></div>
+      ${standingsRows(remaining.slice(2), "league", 2)}
+    `;
+  }
+
+  target.innerHTML =
+    conferenceSection("Eastern", "E", ["Atlantic", "Metropolitan"]) +
+    `<div style="height:28px"></div>` +
+    conferenceSection("Western", "W", ["Central", "Pacific"]);
+
+  bindStandRows(target);
+}
+
 function bindStandRows(root){root.querySelectorAll("tr[data-team]").forEach(tr=>tr.addEventListener("click",()=>openTeam(tr.dataset.team)))}
 function setStandMode(mode,home=false){if(home){homeStandMode=mode;document.querySelectorAll("#homeStandTabs .tab").forEach(b=>b.classList.toggle("active",b.dataset.stand===mode));renderHomeStandings()}else{standMode=mode;document.querySelectorAll("#standTabs .tab").forEach(b=>b.classList.toggle("active",b.dataset.stand===mode));renderStandings()}}
 function renderAllTeams(){let q=($("teamSearch").value||"").toLowerCase();$("allTeams").innerHTML=TEAMS.filter(t=>(t[1]+" "+t[0]).toLowerCase().includes(q)).map(t=>`<button class="team-pick" data-team="${t[0]}">${logo(team(t[0]),"mini-logo")}<span>${escapeHtml(t[1])}<br><span class="muted">${t[0]}</span></span></button>`).join("");$("allTeams").querySelectorAll("[data-team]").forEach(b=>b.addEventListener("click",()=>openTeam(b.dataset.team)))}
