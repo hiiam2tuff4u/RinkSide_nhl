@@ -239,7 +239,7 @@ async function fetchJson(url) {
   }
 }
 
-  async function request(target) async function loadNHL(){
+async function loadNHL(){
  let now=new Date();
  $("todayLabel").textContent=now.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
  // Fail quickly instead of leaving the page stuck on an infinite loading screen.
