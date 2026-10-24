@@ -78,6 +78,16 @@ footer{border-top:1px solid var(--line);padding:20px 16px;text-align:center;colo
 <footer>RINKSIDE · NHL fan-made concept · First draft · No audio yet</footer>
 <div id="toast" class="toast hidden" role="status"></div>
 <script>
+window.addEventListener("error", function (event) {
+  const message = event.message || "Unknown JavaScript error";
+  const box = document.createElement("div");
+  box.style.cssText =
+    "position:fixed;z-index:99999;bottom:10px;left:10px;right:10px;" +
+    "padding:14px;background:#7f1725;color:white;border-radius:10px;" +
+    "font:14px system-ui;overflow-wrap:anywhere";
+  box.textContent = "RINKSIDE ERROR: " + message;
+  document.body.appendChild(box);
+});
 const TEAMS = [
 ["ANA","Anaheim Ducks","#B9975B","Pacific"],["BOS","Boston Bruins","#FFB81C","Atlantic"],["BUF","Buffalo Sabres","#003087","Atlantic"],["CGY","Calgary Flames","#D2001C","Pacific"],["CAR","Carolina Hurricanes","#CC0000","Metropolitan"],["CHI","Chicago Blackhawks","#CF0A2C","Central"],["COL","Colorado Avalanche","#6F263D","Central"],["CBJ","Columbus Blue Jackets","#002654","Metropolitan"],["DAL","Dallas Stars","#006847","Central"],["DET","Detroit Red Wings","#CE1126","Atlantic"],["EDM","Edmonton Oilers","#041E42","Pacific"],["FLA","Florida Panthers","#C8102E","Atlantic"],["LAK","Los Angeles Kings","#A2AAAD","Pacific"],["MIN","Minnesota Wild","#154734","Central"],["MTL","Montreal Canadiens","#AF1E2D","Atlantic"],["NSH","Nashville Predators","#FFB81C","Central"],["NJD","New Jersey Devils","#CE1126","Metropolitan"],["NYI","New York Islanders","#00539B","Metropolitan"],["NYR","New York Rangers","#0038A8","Metropolitan"],["OTT","Ottawa Senators","#C52032","Atlantic"],["PHI","Philadelphia Flyers","#F74902","Metropolitan"],["PIT","Pittsburgh Penguins","#FCB514","Metropolitan"],["SJS","San Jose Sharks","#006D75","Pacific"],["SEA","Seattle Kraken","#001628","Pacific"],["STL","St. Louis Blues","#002F87","Central"],["TBL","Tampa Bay Lightning","#002868","Atlantic"],["TOR","Toronto Maple Leafs","#003E7E","Atlantic"],["UTA","Utah Mammoth","#71AFE5","Central"],["VAN","Vancouver Canucks","#00205B","Pacific"],["VGK","Vegas Golden Knights","#B4975A","Pacific"],["WSH","Washington Capitals","#C8102E","Metropolitan"],["WPG","Winnipeg Jets","#041E42","Central"]
 ];
