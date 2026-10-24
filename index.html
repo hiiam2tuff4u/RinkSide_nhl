@@ -129,11 +129,16 @@ const rosterGroups=[["Forwards",roster?.forwards||[]],["Defense",roster?.defense
 $("teamDetail").innerHTML=`<div class="team-hero" style="--teamcolor:${t.color}">${logo(t,"big-logo")}<div><div class="eyebrow">${t.division} DIVISION</div><h2 style="font-size:27px;margin:5px 0">${escapeHtml(t.name)}</h2><div class="muted">${abbr} · Official team data when available</div></div></div><div class="panel"><div class="section-head" style="margin-top:0"><h2>Team snapshot</h2><small>Current season</small></div><div class="stats-grid">${statCards.map(s=>`<div class="stat"><strong>${s[1]}</strong><span>${s[0]}</span></div>`).join("")}</div><p class="notice">${record?"Standings stats loaded from the NHL standings feed.":"Team standings stats aren't currently available."} Player season stats may depend on NHL API availability.</p></div><div class="panel" style="margin-top:14px"><div class="section-head" style="margin-top:0"><h2>Roster</h2><small>${rosterGroups.reduce((n,g)=>n+g[1].length,0)} players when available</small></div>${rosterGroups.map(([title,list])=>`<h3 style="font-size:14px;margin:18px 0 8px">${title}</h3>${list.length?`<div class="table-wrap"><table><thead><tr><th>PLAYER</th><th>NUMBER</th><th>POSITION</th></tr></thead><tbody>${list.map(p=>`<tr><td style="text-align:left">${escapeHtml(p.firstName?.default?`${p.firstName.default} ${p.lastName?.default||""}`:p.fullName?.default||"Player")}</td><td>${p.sweaterNumber??"—"}</td><td>${escapeHtml(p.positionCode||"—")}</td></tr>`).join("")}</tbody></table></div>`:`<div class="muted" style="font-size:12px">Roster data unavailable in this preview.</div>`}`).join("")}</div>`}
 function openTeam(abbr){previousPage=$("standingsPage").classList.contains("hidden")?($("teamsPage").classList.contains("hidden")?"home":"teams"):"standings";showPage("team");loadTeamDetail(abbr)}
 async function fetchJson(url){
+ // The NHL API may block direct browser requests from GitHub Pages because of CORS.
+ // Use a CORS-enabled read-only proxy for NHL API requests.
+ const requestUrl = url.startsWith("https://api-web.nhle.com/")
+   ? "https://proxy.cors.dev/" + url
+   : url;
  const controller = new AbortController();
- const timeout = setTimeout(()=>controller.abort(), 7000);
+ const timeout = setTimeout(()=>controller.abort(), 15000);
  try {
-   const r=await fetch(url,{cache:"no-store",signal:controller.signal});
-   if(!r.ok)throw new Error("NHL data unavailable");
+   const r=await fetch(requestUrl,{cache:"no-store",credentials:"omit",signal:controller.signal});
+   if(!r.ok)throw new Error("NHL data request failed ("+r.status+")");
    return await r.json();
  } finally { clearTimeout(timeout); }
 }
