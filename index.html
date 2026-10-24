@@ -186,7 +186,7 @@ function filteredStandings(mode) {
 }
 function renderHomeStandings() {
   if (!$("homeStandings")) return;
-  const rows = filteredStandings(homeStandMode).slice(0, 12);
+  const rows = filteredStandings(homeStandMode);
   $("homeStandings").innerHTML = standingsRows(rows, "league");
   bindStandRows($("homeStandings"));
 }
