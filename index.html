@@ -164,21 +164,7 @@ async function fetchJson(url) {
 }
 
 
-.table-wrap{
-  overflow:auto;
-  max-height:65vh;
-  -webkit-overflow-scrolling:touch;
-}
-#standingsContent .table-wrap{
-  max-height:65vh;
-  overflow:auto;
-}
-#standingsContent .table-wrap thead th{
-  position:sticky;
-  top:0;
-  background:#0e222b;
-  z-index:2;
-}
+async function loadNHL(){
  let now=new Date();
  $("todayLabel").textContent=now.toLocaleDateString([],{weekday:"short",month:"short",day:"numeric"});
  // Fail quickly instead of leaving the page stuck on an infinite loading screen.
